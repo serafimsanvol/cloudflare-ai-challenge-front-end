@@ -2,7 +2,7 @@ import { BuyMeACoffee } from "../shared/icons";
 
 export default function Footer() {
   return (
-    <div className="flex w-full flex-col items-center justify-center py-5 text-center md:flex-row">
+    <div className="flex w-full flex-col items-center justify-center text-center md:flex-row">
       <p className="mr-4 text-gray-500">
         A project by{" "}
         <a
