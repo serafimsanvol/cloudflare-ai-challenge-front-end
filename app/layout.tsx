@@ -1,16 +1,17 @@
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/react";
+
 import cx from "classnames";
 import { sfPro, inter } from "./fonts";
 import Nav from "@/components/layout/nav";
 import Footer from "@/components/layout/footer";
 import { Suspense } from "react";
+import Script from "next/script";
 
 export const metadata = {
-  title: "Precedent - Building blocks for your Next.js project",
+  title: "Summarizer - AI Summarization tool for youtube videos",
   description:
-    "Precedent is the all-in-one solution for your Next.js project. It includes a design system, authentication, analytics, and more.",
-  metadataBase: new URL("https://precedent.dev"),
+    "Summarizer is an AI summarization tool that generates summaries for youtube videos. It uses AI to generate summaries for youtube videos.",
+  metadataBase: new URL("https://summarizer.yusyp.dev"),
   themeColor: "#FFF",
 };
 
@@ -22,15 +23,24 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={cx(sfPro.variable, inter.variable)}>
-        <div className="fixed h-screen w-full bg-gradient-to-br from-indigo-50 via-white to-cyan-100" />
         <Suspense fallback="...">
           <Nav />
         </Suspense>
-        <main className="flex min-h-screen w-full flex-col items-center justify-center py-32">
+        <main className="flex min-h-[90vh] w-full flex-col items-center justify-center">
           {children}
         </main>
         <Footer />
-        <Analytics />
+        <Script
+          dangerouslySetInnerHTML={{
+            __html: `
+            (function(c,l,a,r,i,t,y){
+              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+          })(window, document, "clarity", "script", "lsbtqzx0wc");`,
+          }}
+          id="actually-clarity"
+        />
       </body>
     </html>
   );

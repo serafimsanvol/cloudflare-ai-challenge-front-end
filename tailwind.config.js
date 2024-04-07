@@ -6,6 +6,12 @@ module.exports = {
   future: {
     hoverOnlyWhenSupported: true,
   },
+  daisyui: {
+    themes: [
+      "light",
+      // 'dark',
+    ],
+  },
   theme: {
     extend: {
       fontFamily: {
@@ -61,8 +67,9 @@ module.exports = {
     },
   },
   plugins: [
-    require("@tailwindcss/forms"),
     require("@tailwindcss/typography"),
+    require("daisyui"),
+    require("@tailwindcss/forms"),
     plugin(({ addVariant }) => {
       addVariant("radix-side-top", '&[data-side="top"]');
       addVariant("radix-side-bottom", '&[data-side="bottom"]');
