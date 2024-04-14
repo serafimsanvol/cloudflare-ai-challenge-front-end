@@ -34,7 +34,9 @@ const Page = () => {
       ).then((res) => res.json());
       setResultText(resultData.result.text);
     } catch (error) {
-      setLoadingError("Error transcribing video");
+      setLoadingError(
+        "Error transcribing video, it may be too long, try shorter video.",
+      );
       console.log(error);
     } finally {
       setIsLoading(false);
