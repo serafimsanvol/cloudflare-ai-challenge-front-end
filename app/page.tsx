@@ -15,6 +15,7 @@ const Page = () => {
   const [loadingText, setLoadingText] = useState("");
   const [loadingError, setLoadingError] = useState("");
 
+  console.log(process.env);
   const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
   const transcribe = async (data: any) => {
