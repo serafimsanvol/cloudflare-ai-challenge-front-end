@@ -23,9 +23,6 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={cx(sfPro.variable, inter.variable)}>
-        <Suspense fallback="...">
-          <Nav />
-        </Suspense>
         <main className="flex min-h-[90vh] w-full flex-col items-center justify-center">
           {children}
         </main>

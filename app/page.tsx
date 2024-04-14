@@ -1,23 +1,131 @@
-export default async function Home() {
+"use client";
+import { useState } from "react";
+import { set, useForm } from "react-hook-form";
+
+const Page = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  // fetch
+  const [resultText, setResultText] = useState("");
+  const [resultSummary, setResultSummary] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState("");
+  const [loadingError, setLoadingError] = useState("");
+
+  const transcribe = async (data) => {
+    console.log("transcribe called");
+    const url = encodeURIComponent(data.url);
+    setIsLoading(true);
+    setLoadingText("Transcribing video...");
+    fetch(`http://localhost:4000/video/transcribe?url=${url}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("data");
+        setResultText(data.result.text);
+      })
+      .catch(console.log)
+      .finally(() => {
+        setIsLoading(false);
+        setLoadingText("");
+      });
+    console.log(data);
+  };
+
+  const onSubmit = async (data) => {
+    setResultText("");
+    setResultSummary("");
+    setLoadingError("");
+    const url = encodeURIComponent(data.url);
+    setIsLoading(true);
+    setLoadingText("Saving video...");
+    try {
+      await fetch(`http://localhost:4000/video/save?url=${url}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      setLoadingError("Error saving video");
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+      setLoadingText("");
+    }
+
+    transcribe(data);
+  };
+
+  const onSummarize = async (data) => {
+    setIsLoading(true);
+    fetch(`http://localhost:4000/video/summarize`, {
+      method: "POST",
+      body: JSON.stringify({ text: resultText }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("data", data);
+        setResultSummary(data.result.translated_text);
+      })
+      .catch(console.log);
+    // .finally(() => setIsLoading(false));
+    console.log(data);
+  };
+
   return (
-    <div className="hero min-h-[90vh]">
-      <div className="hero-content text-center">
-        <div className="max-w-md">
-          <h1 className="pb-4 text-5xl font-bold">Summarizer</h1>
-          <p className="pb-6">
-            Summarizer is an AI summarization tool that generates summaries for
-            youtube videos. It uses AI to generate summaries for youtube videos.
-          </p>
-          <div className="join">
-            <input
-              type="text"
-              placeholder="Paste link here"
-              className="input join-item input-bordered w-full max-w-md"
-            />
-            <button className="btn btn-primary join-item">Get Started</button>
-          </div>
-        </div>
-      </div>
+    <div className="flex flex-col">
+      <form onSubmit={handleSubmit(onSubmit)} className="join">
+        <input
+          disabled={isLoading}
+          {...register("url", {
+            required: true,
+          })}
+          type="text"
+          name="url"
+          placeholder="Paste link here"
+          className={
+            "input join-item input-bordered w-full max-w-md" +
+            (errors.url ? "input-error" : "")
+          }
+        />
+        <button
+          disabled={isLoading}
+          type="submit"
+          className={`btn btn-primary join-item ${isLoading && "btn-disabled"}`}
+        >
+          Get Started
+        </button>
+      </form>
+      {isLoading && (
+        <p className="loading loading-ball loading-lg mt-4 bg-primary"></p>
+      )}
+      {isLoading && <p className="mt-4 text-center">{loadingText}</p>}
+      {loadingError && <p className="mt-4 text-center">Error:{loadingError}</p>}
+      {resultText && <p className="mt-4 text-center">Your result:</p>}
+      {resultText && (
+        <p className="prose-p mt-4 max-w-lg text-center">{resultText}</p>
+      )}
+      {resultText && (
+        <button onClick={onSummarize} className="btn btn-primary mt-4">
+          Translate
+        </button>
+      )}
+      {resultSummary && (
+        <p className="prose-p mt-4 max-w-lg text-center">{resultSummary}</p>
+      )}
     </div>
   );
-}
+};
+
+export default Page;
