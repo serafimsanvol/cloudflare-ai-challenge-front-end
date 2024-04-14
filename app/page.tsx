@@ -15,7 +15,6 @@ const Page = () => {
   const [loadingText, setLoadingText] = useState("");
   const [loadingError, setLoadingError] = useState("");
 
-  console.log(process.env);
   const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
   const transcribe = async (data: any) => {
@@ -79,10 +78,9 @@ const Page = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log("data", data);
-        setResultSummary(data.result.translated_text);
+        setResultSummary(data.result.summary);
       })
       .catch(console.log);
-    // .finally(() => setIsLoading(false));
     console.log(data);
   };
 
@@ -114,14 +112,16 @@ const Page = () => {
         <p className="loading loading-ball loading-lg mt-4 bg-primary"></p>
       )}
       {isLoading && <p className="mt-4 text-center">{loadingText}</p>}
-      {loadingError && <p className="mt-4 text-center">Error:{loadingError}</p>}
+      {loadingError && (
+        <p className="mt-4 text-center text-error">Error:{loadingError}</p>
+      )}
       {resultText && <p className="mt-4 text-center">Your result:</p>}
       {resultText && (
         <p className="prose-p mt-4 max-w-lg text-center">{resultText}</p>
       )}
       {resultText && (
         <button onClick={onSummarize} className="btn btn-primary mt-4">
-          Translate
+          Summarize
         </button>
       )}
       {resultSummary && (
