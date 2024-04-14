@@ -18,27 +18,28 @@ const Page = () => {
   const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
   const transcribe = async (data: any) => {
-    console.log("transcribe called");
-    const url = encodeURIComponent(data.url);
-    setIsLoading(true);
-    setLoadingText("Transcribing video...");
-    fetch(`${BASE_URL}/video/transcribe?url=${url}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("data");
-        setResultText(data.result.text);
-      })
-      .catch(console.log)
-      .finally(() => {
-        setIsLoading(false);
-        setLoadingText("");
-      });
-    console.log(data);
+    try {
+      console.log("transcribe called");
+      const url = encodeURIComponent(data.url);
+      setIsLoading(true);
+      setLoadingText("Transcribing video...");
+      const resultData = await fetch(
+        `${BASE_URL}/video/transcribe?url=${url}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      ).then((res) => res.json());
+      setResultText(resultData.result.text);
+    } catch (error) {
+      setLoadingError("Error transcribing video");
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+      setLoadingText("");
+    }
   };
 
   const onSubmit = async (data: any) => {
@@ -67,26 +68,32 @@ const Page = () => {
   };
 
   const onSummarize = async (data: any) => {
-    setIsLoading(true);
-    fetch(`${BASE_URL}/video/summarize`, {
-      method: "POST",
-      body: JSON.stringify({ text: resultText }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("data", data);
-        setResultSummary(data.result.summary);
+    try {
+      setIsLoading(true);
+      await fetch(`${BASE_URL}/video/summarize`, {
+        method: "POST",
+        body: JSON.stringify({ text: resultText }),
+        headers: {
+          "Content-Type": "application/json",
+        },
       })
-      .catch(console.log);
-    console.log(data);
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("data", data);
+          setResultSummary(data.result.summary);
+        })
+        .catch(console.log);
+    } catch (error) {
+      setLoadingError("Error summarizing video");
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="flex flex-col">
-      <form onSubmit={handleSubmit(onSubmit)} className="join">
+      <form onSubmit={handleSubmit(onSubmit)} className="join mt-4">
         <input
           disabled={isLoading}
           {...register("url", {
@@ -108,24 +115,30 @@ const Page = () => {
           Get Started
         </button>
       </form>
-      {isLoading && (
-        <p className="loading loading-ball loading-lg mt-4 bg-primary"></p>
-      )}
-      {isLoading && <p className="mt-4 text-center">{loadingText}</p>}
-      {loadingError && (
-        <p className="mt-4 text-center text-error">Error:{loadingError}</p>
-      )}
       {resultText && <p className="mt-4 text-center">Your result:</p>}
       {resultText && (
         <p className="prose-p mt-4 max-w-lg text-center">{resultText}</p>
       )}
       {resultText && (
-        <button onClick={onSummarize} className="btn btn-primary mt-4">
+        <button
+          disabled={!!resultSummary}
+          onClick={onSummarize}
+          className="btn btn-primary mt-4"
+        >
           Summarize
         </button>
       )}
       {resultSummary && (
         <p className="prose-p mt-4 max-w-lg text-center">{resultSummary}</p>
+      )}
+      {isLoading && (
+        <p className="mt-4 flex w-full justify-center">
+          <span className="loading loading-ball loading-lg bg-primary"></span>
+        </p>
+      )}
+      {isLoading && <p className="mt-4 text-center">{loadingText}</p>}
+      {loadingError && (
+        <p className="mt-4 text-center text-error">Error:{loadingError}</p>
       )}
     </div>
   );
