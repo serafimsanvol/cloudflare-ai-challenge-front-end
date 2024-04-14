@@ -15,7 +15,7 @@ const Page = () => {
   const [loadingText, setLoadingText] = useState("");
   const [loadingError, setLoadingError] = useState("");
 
-  const transcribe = async (data) => {
+  const transcribe = async (data: any) => {
     console.log("transcribe called");
     const url = encodeURIComponent(data.url);
     setIsLoading(true);
@@ -39,7 +39,7 @@ const Page = () => {
     console.log(data);
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: any) => {
     setResultText("");
     setResultSummary("");
     setLoadingError("");
@@ -64,7 +64,7 @@ const Page = () => {
     transcribe(data);
   };
 
-  const onSummarize = async (data) => {
+  const onSummarize = async (data: any) => {
     setIsLoading(true);
     fetch(`http://localhost:4000/video/summarize`, {
       method: "POST",
