@@ -15,12 +15,14 @@ const Page = () => {
   const [loadingText, setLoadingText] = useState("");
   const [loadingError, setLoadingError] = useState("");
 
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
   const transcribe = async (data: any) => {
     console.log("transcribe called");
     const url = encodeURIComponent(data.url);
     setIsLoading(true);
     setLoadingText("Transcribing video...");
-    fetch(`http://localhost:4000/video/transcribe?url=${url}`, {
+    fetch(`${BASE_URL}/video/transcribe?url=${url}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -47,7 +49,7 @@ const Page = () => {
     setIsLoading(true);
     setLoadingText("Saving video...");
     try {
-      await fetch(`http://localhost:4000/video/save?url=${url}`, {
+      await fetch(`${BASE_URL}/video/save?url=${url}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -66,7 +68,7 @@ const Page = () => {
 
   const onSummarize = async (data: any) => {
     setIsLoading(true);
-    fetch(`http://localhost:4000/video/summarize`, {
+    fetch(`${BASE_URL}/video/summarize`, {
       method: "POST",
       body: JSON.stringify({ text: resultText }),
       headers: {
